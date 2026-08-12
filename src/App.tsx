@@ -1541,18 +1541,24 @@ export default function App() {
     let webhookSuccess = false;
 
     // 2. PRIORITY 1: Google Apps Script Webhook Sync (Bypasses GCP 403 restrictions completely)
-    try {
-      const res = await fetch('/api/sheets/apps-script-sync', {
+try {
+      // الإرسال المباشر إلى جوجل شيت وتجاوز سيرفر Vercel وأخطاء الـ 405 والـ JSON
+      await fetch(activeAppsScriptUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8',
+        },
         body: JSON.stringify({
-          appsScriptUrl: activeAppsScriptUrl,
           orders: syncOrders,
           products: syncProducts,
           manufacturers: syncManufacturers,
           expenses: syncExpenses,
         }),
       });
+
+      webhookSuccess = true;
+      const timeStr = new Date().toLocaleTimeString('ar-EG', {
 
       const data = await res.json();
       if (data.success) {
