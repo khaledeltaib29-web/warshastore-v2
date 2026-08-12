@@ -246,20 +246,20 @@ const handleTestInstantSync = async () => {
       if (!activeUrl) {
         setDiagnosticData({
           success: false,
-          error: 'يرجى إدخال رابط Google Apps Script Web App URL أولاً في الخانة بالأعلى.',
+          error: 'يرجى إدخال رابط Web App URL في الخانة بالأعلى.',
         });
         setIsTesting(false);
         return;
       }
 
-      // الإرسال المباشر وتجاوز سيرفر Vercel وأخطاء 405
+      // إرسال البيانات كـ POST وبدون توقع رد JSON لتجنب خطأ الـ no-cors
       await fetch(activeUrl, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
-          'Content-Type': 'text/plain;charset=utf-8',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          action: 'test', // إشارة للاختبار
           orders,
           products,
           manufacturers,
@@ -267,26 +267,27 @@ const handleTestInstantSync = async () => {
         }),
       });
 
+      // افتراض النجاح نظراً لأننا تخطينا مرحلة الإرسال
       setDiagnosticData({
         success: true,
         fileName: settings.spreadsheetTitle || 'WarshaStore Database',
         spreadsheetId: settings.spreadsheetId,
         hasWriteAccess: true,
         updatedAt: new Date().toISOString(),
-        message: 'تمت المزامنة المباشرة واختبار الاتصال بنجاح تام!',
+        message: 'تم إرسال البيانات للاختبار بنجاح!',
       });
 
       setMessage({
-        text: '✅ تم اختبار الاتصال وإرسال البيانات مباشرة إلى جوجل شيت بنجاح!',
+        text: '✅ تم إرسال البيانات بنجاح!',
         type: 'success',
       });
     } catch (err: any) {
       setDiagnosticData({
         success: false,
-        error: 'تعذر الاتصال المباشر: ' + (err.message || 'خطأ شبكة'),
+        error: 'خطأ في الاتصال: ' + err.message,
       });
       setMessage({
-        text: 'فشل الاتصال المباشر بجوجل شيت.',
+        text: 'فشل إرسال البيانات.',
         type: 'error',
       });
     } finally {
