@@ -202,7 +202,7 @@ export const SheetsSettingsView: React.FC<SheetsSettingsViewProps> = ({
     }
   };
 
-  const handleSyncViaAppsScript = async () => {
+const handleSyncViaAppsScript = async () => {
     const url = appsScriptInput.trim() || settings.appsScriptUrl;
     if (!url) {
       setMessage({ text: 'يرجى إدخال رابط Web App الخاص بـ Google Apps Script أولاً.', type: 'error' });
@@ -210,17 +210,28 @@ export const SheetsSettingsView: React.FC<SheetsSettingsViewProps> = ({
     }
     setIsAppsScriptSyncing(true);
     try {
-      const res = await fetch('/api/sheets/apps-script-sync', {
+      await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8',
+        },
         body: JSON.stringify({
-          appsScriptUrl: url,
           orders,
           products,
           manufacturers,
           expenses,
         }),
       });
+
+      onUpdateSettings({ appsScriptUrl: url, lastSyncedAt: new Date().toLocaleTimeString('ar-EG') });
+      setMessage({ text: '✅ تمت المزامنة عبر Google Apps Script Webhook بنجاح!', type: 'success' });
+    } catch (err: any) {
+      setMessage({ text: 'تعذر الاتصال بـ Webhook: ' + err.message, type: 'error' });
+    } finally {
+      setIsAppsScriptSyncing(false);
+    }
+  };
       const data = await res.json();
       if (data.success) {
         onUpdateSettings({ appsScriptUrl: url, lastSyncedAt: new Date().toLocaleTimeString('ar-EG') });
