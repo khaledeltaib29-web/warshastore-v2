@@ -232,19 +232,7 @@ const handleSyncViaAppsScript = async () => {
       setIsAppsScriptSyncing(false);
     }
   };
-      const data = await res.json();
-      if (data.success) {
-        onUpdateSettings({ appsScriptUrl: url, lastSyncedAt: new Date().toLocaleTimeString('ar-EG') });
-        setMessage({ text: '✅ ' + (data.message || 'تمت المزامنة بنجاح عبر Apps Script Webhook!'), type: 'success' });
-      } else {
-        setMessage({ text: '⚠️ ' + (data.error || 'فشلت المزامنة عبر Webhook.'), type: 'error' });
-      }
-    } catch (err: any) {
-      setMessage({ text: 'تعذر الاتصال بـ Webhook: ' + err.message, type: 'error' });
-    } finally {
-      setIsAppsScriptSyncing(false);
-    }
-  };
+
 
   const [diagnosticData, setDiagnosticData] = useState<DiagnosticData | null>(null);
   const [isTesting, setIsTesting] = useState(false);
