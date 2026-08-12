@@ -1,0 +1,6 @@
+{
+  "name": "ورشة في كل بيت",
+  "description": "نظام إدارة أعمال ورشة وتجارة يعتمد على Google Sheets وحفظ البيانات وتصدير Excel مع واجهة موبايل سلسة RTL.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
