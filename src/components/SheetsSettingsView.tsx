@@ -167,25 +167,14 @@ export const SheetsSettingsView: React.FC<SheetsSettingsViewProps> = ({
     handleSyncViaAppsScript();
   };
 
-  const handlePurgeCacheAndReload = async () => {
+const handlePurgeCacheAndReload = async () => {
     try {
       localStorage.removeItem('warsha_settings');
-      const res = await fetch('/api/db');
-      const data = await res.json();
-      if (data && data.success && data.data && data.data.settings) {
-        onUpdateSettings(data.data.settings);
-        if (data.data.settings.spreadsheetId) {
-          setInputUrl(data.data.settings.spreadsheetUrl || data.data.settings.spreadsheetId);
-        }
-        if (data.data.settings.appsScriptUrl) {
-          setAppsScriptInput(data.data.settings.appsScriptUrl);
-        }
-      }
       setMessage({
-        text: '✅ تم تنظيف ذاكرة التخزين المؤقت (Cache) وإعادة مزامنة الإعدادات مع السيرفر بنجاح!',
+        text: '✅ تم تنظيف ذاكرة التخزين المؤقت (Cache) بنجاح!',
         type: 'success',
       });
-      if (settings.appsScriptUrl || appsScriptInput.trim()) {
+      if (appsScriptInput.trim() || settings.appsScriptUrl) {
         await handleSyncViaAppsScript();
       }
     } catch (e: any) {
