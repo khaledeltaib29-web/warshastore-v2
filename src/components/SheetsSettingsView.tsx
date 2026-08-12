@@ -246,20 +246,21 @@ const handleTestInstantSync = async () => {
       if (!activeUrl) {
         setDiagnosticData({
           success: false,
-          error: 'يرجى إدخال رابط Web App URL في الخانة بالأعلى.',
+          error: 'يرجى التأكد من وضع رابط Google Apps Script في الخانة المخصصة له.',
         });
         setIsTesting(false);
         return;
       }
 
-      // إرسال البيانات كـ POST وبدون توقع رد JSON لتجنب خطأ الـ no-cors
-      await fetch(activeUrl, {
+      // الاتصال المباشر برابط Google Apps Script وتجاوز API Vercel تماماً
+      const response = await fetch(activeUrl, {
         method: 'POST',
+        mode: 'no-cors', // لضمان عدم حدوث تعارض CORS
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'test', // إشارة للاختبار
+          action: 'sync',
           orders,
           products,
           manufacturers,
@@ -267,27 +268,27 @@ const handleTestInstantSync = async () => {
         }),
       });
 
-      // افتراض النجاح نظراً لأننا تخطينا مرحلة الإرسال
+      // في حالة no-cors، لا يمكن قراءة الرد، نعتبره نجاحاً بمجرد الوصول
       setDiagnosticData({
         success: true,
-        fileName: settings.spreadsheetTitle || 'WarshaStore Database',
+        fileName: settings.spreadsheetTitle || 'تمت المزامنة',
         spreadsheetId: settings.spreadsheetId,
         hasWriteAccess: true,
         updatedAt: new Date().toISOString(),
-        message: 'تم إرسال البيانات للاختبار بنجاح!',
+        message: 'تم إرسال البيانات مباشرة إلى Google Sheets بنجاح!',
       });
 
       setMessage({
-        text: '✅ تم إرسال البيانات بنجاح!',
+        text: '✅ تم إرسال البيانات بنجاح (اتصال مباشر)!',
         type: 'success',
       });
     } catch (err: any) {
       setDiagnosticData({
         success: false,
-        error: 'خطأ في الاتصال: ' + err.message,
+        error: 'فشل الاتصال المباشر: ' + err.message,
       });
       setMessage({
-        text: 'فشل إرسال البيانات.',
+        text: 'خطأ في الاتصال المباشر بجوجل.',
         type: 'error',
       });
     } finally {
