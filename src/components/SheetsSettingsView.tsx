@@ -101,7 +101,7 @@ export const SheetsSettingsView: React.FC<SheetsSettingsViewProps> = ({
   const [showAppsScriptModal, setShowAppsScriptModal] = useState(false);
   const [isAppsScriptSyncing, setIsAppsScriptSyncing] = useState(false);
 
-  const APPS_SCRIPT_CODE = `function doPost(e) {
+ const APPS_SCRIPT_CODE = `function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -147,12 +147,6 @@ export const SheetsSettingsView: React.FC<SheetsSettingsViewProps> = ({
       updateTab('المصروفات', exHeaders, exRows);
     }
 
-    if (data.summaryRows && data.summaryRows.length > 0) {
-      var sSheet = ss.getSheetByName('ملخص الحسابات') || ss.insertSheet('ملخص الحسابات');
-      sSheet.clearContents();
-      sSheet.getRange(1, 1, data.summaryRows.length, data.summaryRows[0].length).setValues(data.summaryRows);
-    }
-    
     return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'تمت المزامنة بنجاح!' }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
